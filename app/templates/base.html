@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+    </style>
+
+    {% if title %}
+    <title>{{ title }}</title>
+    {% endif %}
+</head>
+
+    <body bgcolor="LightGray">
+    {% if title == 'Log In' %}
+    {% elif title == 'Start' %}
+    {% else %}
+        <div>
+            Song Recommender:
+            <a href = "{{ url_for('home') }}">Home</a>
+        </div>
+    {% endif %}
+    <hr>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+    {% block content %}{% endblock %}
+    </body>
+</html>
