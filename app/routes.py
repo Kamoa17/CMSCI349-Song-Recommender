@@ -1,6 +1,6 @@
 from app import app
 from flask import render_template, flash, redirect, url_for
-from app.forms import Login
+from app.forms import Login, SignUp
 
 
 @app.route('/')
@@ -19,6 +19,16 @@ def login():
         # flash to display messages for prototype, driver
         return redirect(url_for('home'))  # navigation when complete
     return render_template('login.html', title='Log In', form=form)  # pass form
+
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    form = SignUp()  # instantiate object
+    if form.validate_on_submit():
+        flash('Email: {} | User ID: {} | Password: {}' .format(form.email.data, form.username.data, form.password.data))
+        # flash to display messages for prototype, driver
+        return redirect(url_for('home'))  # navigation when complete
+    return render_template('signup.html', title='Sign Up', form=form)  # pass form
 
 
 @app.route('/home')
