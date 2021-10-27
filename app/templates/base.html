@@ -9,15 +9,19 @@
     {% if title %}
     <title>{{ title }}</title>
     {% endif %}
+    <link href="{{ url_for('static', filename='styles/style.css+')}}"/>
 </head>
 
     <body bgcolor="LightGray">
     {% if title == 'Log In' %}
+    {% elif title == 'Sign Up' %}
     {% elif title == 'Start' %}
+    {% elif title == 'Log Out'%}
     {% else %}
         <div>
             Song Recommender:
             <a href = "{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
         </div>
     {% endif %}
     <hr>
