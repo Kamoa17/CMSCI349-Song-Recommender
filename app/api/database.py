@@ -1,7 +1,10 @@
 from google.cloud import datastore
 import json
 
-datastore_client = datastore.Client()
+import dotenv
+
+dotenv.load_dotenv("../../.env")
+datastore_client = datastore.Client(project="song-recommender-team2")
 
 
 def add_user(user_info: dict):
