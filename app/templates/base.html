@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+    </style>
+
+    {% if title %}
+    <title>{{ title }}</title>
+    {% endif %}
+    <link href="{{ url_for('static', filename='styles/style.css+')}}"/>
+</head>
+
+    <body bgcolor="LightGray">
+    {% if title == 'Log In' %}
+    {% elif title == 'Sign Up' %}
+    {% elif title == 'Start' %}
+    {% elif title == 'Log Out'%}
+    {% else %}
+        <div>
+            Song Recommender:
+            <a href = "{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    {% endif %}
+    <hr>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+    {% block content %}{% endblock %}
+    </body>
+</html>
