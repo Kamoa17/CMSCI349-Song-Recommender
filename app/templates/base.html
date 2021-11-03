@@ -2,17 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <style>
-        body {
-    </style>
-
     {% if title %}
     <title>{{ title }}</title>
     {% endif %}
     <link href="{{ url_for('static', filename='styles/style.css+')}}"/>
 </head>
 
-    <body bgcolor="LightGray">
+    <body style="background:LightGray;">
     {% if title == 'Log In' %}
     {% elif title == 'Sign Up' %}
     {% elif title == 'Start' %}

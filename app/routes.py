@@ -46,6 +46,13 @@ def logout():
 def home():
     return render_template("home.html", title="Home")
 
+@app.route("/liked_songs",methods=["GET","POST"])
+def liked_songs():
+    # for future backend:
+    # retrieve songs from liked songs from the user
+    # transform the data back into something to present
+    return render_template("liked_songs.html", title="Liked Songs")
+
 
 # API Routes
 @app.route("/api/song/metadata/<int:song_id>", methods=["GET"])
