@@ -1,0 +1,11 @@
+body {background-color: white;}
+
+.myDiv {
+    width: 90%;
+    display: inline-block;
+    border: none;
+    background: white;
+    text-align: middle;
+
+}
+

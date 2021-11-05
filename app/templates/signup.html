@@ -2,11 +2,17 @@
 
 {% block content %}
 
-<h1>Sign Up & Register</h1>
+<html>
+ <div class="myDiv">
+<link rel="stylesheet" href = "{{ url_for('static', filename='styles/newacct.css') }}">
+<h1>Sign Up </h1>
+
     <form action = "" method = "post" novalidate>
 
         {{ form.hidden_tag() }}
 
+         <p>Please fill in this form to create an account.</p>
+        <div class="myDiv">
         <p>
             {{ form.email.label }}<br>
             {{ form.email(size = 32) }}
@@ -14,6 +20,7 @@
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
+
         <p>
             {{ form.username.label }}<br>
             {{ form.username(size = 32) }}
@@ -27,7 +34,9 @@
             {% for error in form.password.errors %}
             <span style="color: red">[{{ error }}]</span>
             {% endfor %}
-        </p>
+        </p></div>
         <p>{{ form.submit() }}</p>
+
+        </html>
 
 {% endblock %}
