@@ -47,6 +47,11 @@ def home():
     return render_template("home.html", title="Home")
 
 
+@app.route("/account")
+def account():
+    return render_template("account.html", title="Account")
+
+
 # API Routes
 @app.route("/api/song/metadata/<int:song_id>", methods=["GET"])
 def get_song_meta(song_id):
