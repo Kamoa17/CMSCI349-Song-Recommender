@@ -34,8 +34,13 @@
             {% for error in form.password.errors %}
             <span style="color: red">[{{ error }}]</span>
             {% endfor %}
-        </p></div>
-        <p>{{ form.submit() }}</p>
+
+
+
+        </div>
+    <p>
+        <button class="grey"><a href="{{ url_for('login') }}"> Cancel</button></a>
+            {{ form.submit() }}</p>
 
         </html>
 

@@ -4,8 +4,8 @@ from wtforms.validators import DataRequired
 
 
 class Login(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
+    username = StringField('Username', render_kw={"placeholder":"Enter your username"}, validators=[DataRequired()])
+    password = PasswordField('Password',render_kw={"placeholder":"Enter your password"}, validators=[DataRequired()])
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Sign In')
 
@@ -15,3 +15,4 @@ class SignUp(FlaskForm):
     username = StringField('Username',render_kw={"placeholder": "Enter Username"}, validators=[DataRequired()])
     password = PasswordField('Password',render_kw={"placeholder": "Enter Password"}, validators=[DataRequired()])
     submit = SubmitField('Sign Up')
+    cancel_button = SubmitField()
