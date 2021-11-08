@@ -5,4 +5,19 @@
 <p>welcome! this is the start page... sign in</p>
 <p>we can have the logo and i guess our project can sit here until user is ready to log in</p>
 <a href="{{ url_for('login') }}">Go to Login</a>
+<p>
+
+        <a href="{{ url_for('login') }}">
+        <img src="{{url_for('static', filename='acct.jpg')}}" align="middle" style="width:50px;height:50px;"></a>
+<!-- account button - for now it takes you to login page, but will once created link to account page -->
+
+        <a href="{{ url_for('login') }}">
+         <img src="{{url_for('static', filename='playlist.png')}}" align="middle" style="width:50px;height:50px;"></a>
+    <!-- playlist button - for now it takes you to login page, but will once created link to playlist page -->
+</a>
+      <a href="{{ url_for('login') }}">
+          <img src="{{url_for('static', filename='likedsong3.jpg')}}" align="middle" style="width:50px;height:50px;"></a>
+    <!-- playlist button - for now it takes you to login page, but will once created link to liked song page -->
+
+</p>
 {% endblock %}
