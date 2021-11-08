@@ -58,6 +58,10 @@ def logout():
 def home():
     return render_template("home.html", title="Home")
 
+@app.route("/recommendation")
+def recommendation():
+    return render_template("recommendation.html", title="Recommendation")
+
 @app.route("/liked_songs",methods=["GET","POST"])
 def liked_songs():
     # for future backend:
