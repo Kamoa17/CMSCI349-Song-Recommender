@@ -60,16 +60,13 @@ def home():
 
 
 @app.route("/account")
-<<<<<<< HEAD
 def user_account():
     return render_template("account.html", title="Account")
-=======
 
 
 @app.route("/songs")
 def user_songs():
     return render_template("songs.html")
->>>>>>> 496051eca505e2a2c986b02c9219ed622a606e09
 
 
 # API Routes
