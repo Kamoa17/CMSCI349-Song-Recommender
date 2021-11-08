@@ -1,35 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Song Recommender" />
     {% if title %}
     <title>{{ title }}</title>
     {% endif %}
-    <link href="{{ url_for('static', filename='styles/style.css+')}}"/>
+
+    <!-- Load Spectre CSS library for styling-->
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-exp.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-icons.min.css">
+
+    <!-- Load static files -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}" />
 </head>
 
-    <body style="background:LightGray;">
-    {% if title == 'Log In' %}
-    {% elif title == 'Sign Up' %}
-    {% elif title == 'Start' %}
-    {% elif title == 'Log Out'%}
-    {% else %}
-        <div>
-            Song Recommender:
-            <a href = "{{ url_for('home') }}">Home</a>
-            <a href="{{ url_for('logout') }}">Logout</a>
-        </div>
-    {% endif %}
-    <hr>
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <ul>
-            {% for message in messages %}
-            <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        {% endwith %}
+<body>
+    <svg class="hidden">
+        <!-- made with Icomoon.io, Icons from http://www.entypo.com/ and https://icomoon.io/ -->
+        <defs>
+            <symbol id="icon-lp-mini" viewBox="0 0 800 800">
+                <title>LP Mini</title>
+                <g style="fill: #181819; stroke: #141415; stroke-width: 1.5;">
+                    <circle cx="400" cy="400" r="380" />
+                    <circle cx="400" cy="400" r="370" />
+                    <circle cx="400" cy="400" r="360" />
+                    <circle cx="400" cy="400" r="350" />
+                    <circle cx="400" cy="400" r="340" />
+                    <circle cx="400" cy="400" r="330" />
+                    <circle cx="400" cy="400" r="320" />
+                    <circle cx="400" cy="400" r="310" />
+                    <circle cx="400" cy="400" r="300" />
+                    <circle cx="400" cy="400" r="290" />
+                    <circle cx="400" cy="400" r="280" />
+                    <circle cx="400" cy="400" r="270" />
+                    <circle cx="400" cy="400" r="260" />
+                    <circle cx="400" cy="400" r="250" />
+                    <circle cx="400" cy="400" r="240" />
+                    <circle cx="400" cy="400" r="230" />
+                    <circle cx="400" cy="400" r="220" />
+                    <circle cx="400" cy="400" r="210" />
+                    <circle cx="400" cy="400" r="200" />
+                </g>
+            </symbol>
+        </defs>
+    </svg>
+    <header class="navbar">
+        <section class="navbar-section">
+            <a href="{{ url_for('home') }}" class="btn btn-link">Home</a>
+            <a href="{{ url_for('user_songs') }}" class="btn btn-link">Songs</a>
+        </section>
+        <section class="navbar-center">
+            <h3 class="h3">Song Recommender</h3>
+        </section>
+        <section class="navbar-section">
+            <a href="{{ url_for('user_account') }}" class="btn btn-link">Account</a>
+            <a href="{{ url_for('logout') }}" class="btn btn-link">Logout</a>
+        </section>
+    </header>
     {% block content %}{% endblock %}
-    </body>
+</body>
+
 </html>

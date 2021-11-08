@@ -3,11 +3,14 @@ import json
 import dotenv
 dotenv.load_dotenv(dotenv.find_dotenv())
 
-datastore_client = datastore.Client()
+import dotenv
+
+dotenv.load_dotenv(dotenv.find_dotenv())
+datastore_client = datastore.Client(project="song-recommender-team2")
 
 
 def add_user(user_info: dict):
-    """Adds a new user to th users table
+    """Add a new user to the users table
 
     Args:
         user_info (dict): A key, value mapping of the user attributes
@@ -44,7 +47,7 @@ def add_song_metadata(song_info: dict):
 
 
 def get_song_metadata(song_id: int):
-    """Gets a song metadata
+    """Get a song metadata
 
     Args:
         song_id (int): The unique ID of the song
@@ -57,3 +60,17 @@ def get_song_metadata(song_id: int):
     query = query.add_filter("__key__", "=", song_key)
     results = list(query.fetch())
     return json.dumps(dict(results[0]))
+
+
+def get_all_songs():
+    """Get all the songs added by a user
+        @TODO this function should take a user ID argument and return only songs
+        that the current user has added. Right now, it returns all songs in the DB
+        which is not a good idea
+    Returns:
+        List<datastore.Entity>: The user added songs
+    """
+    query = datastore_client.query(kind="song-metadata")
+    results = list(query.fetch())
+    all_songs = [dict(song) for song in results]
+    return json.dumps(all_songs)

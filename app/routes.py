@@ -1,8 +1,20 @@
+import json
 from app import app
-from flask import render_template, flash, redirect, url_for, request, jsonify
+from flask import render_template, flash, redirect, url_for, request, Response
 from app.forms import Login, SignUp
-from app.api.database import get_song_metadata, add_song_metadata, add_user
-from markupsafe import escape
+from app.api.database import (
+    get_song_metadata,
+    add_song_metadata,
+    add_user,
+    get_user,
+    get_all_songs,
+)
+# pylint: disable=unused-import
+from app.api.spotify import (
+    get_track_metadata,
+    recommendations_by_artist,
+    recommendations_by_genre,
+)
 
 
 @app.route("/")
@@ -54,15 +66,40 @@ def liked_songs():
     return render_template("liked_songs.html", title="Liked Songs")
 
 
+@app.route("/account")
+def user_account():
+    # user = get_user() 
+    return "Account Page"
+    #return render_template("account.html")
+
+
+@app.route("/songs")
+def user_songs():
+    return render_template("songs.html")
+
+
 # API Routes
 @app.route("/api/song/metadata/<int:song_id>", methods=["GET"])
+@app.route("/song/<int:song_id>")
 def get_song_meta(song_id):
     song_meta = get_song_metadata(song_id=song_id)
     return song_meta
 
 
-@app.route("/api/song/metadata/add", methods=["POST"])
-def add_song_meta():
+@app.route("/api/songs/list")
+@app.route("/songs/list")
+def list_all_songs():
+    all_songs = get_all_songs()
+    if "/api/" in request.url_rule.rule:
+        r = Response(all_songs, 200, mimetype="application/json")
+        r.headers["Content-Type"] = "application/json;;charset=iso-8859-1"
+        return r
+    return render_template("songs.html", title="Liked Songs", data=json.loads(all_songs))
+
+
+@app.route("/api/song/metadata/add/<track_id>", methods=["POST"])
+def add_song_meta(track_id):
+
     song_data = request.json
     add_song_metadata(song_info=song_data)
 
@@ -71,9 +108,13 @@ def add_song_meta():
 
 
 @app.route("/api/users/add", methods=["POST"])
+@app.route("/add-user", methods=["POST", "GET"])
 def add_new_user():
-    user_data = request.json
-    add_user(user_info=user_data)
+    if request.method == "POST":
+        user_data = request.json
+        add_user(user_info=user_data)
 
-    # @TODO add error handling
+        # @TODO add error handling
+        return "done"
+    # return render_template("")
     return "done"
