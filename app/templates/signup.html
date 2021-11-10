@@ -2,7 +2,6 @@
 
 {% block content %}
 
-<html>
  <div class="myDiv">
 <link rel="stylesheet" href = "{{ url_for('static', filename='styles/newacct.css') }}">
 <h1>Sign Up </h1>
@@ -42,6 +41,6 @@
         <button class="grey"><a href="{{ url_for('login') }}"> Cancel</button></a>
             {{ form.submit() }}</p>
 
-        </html>
+    </form>
 
 {% endblock %}
