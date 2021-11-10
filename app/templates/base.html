@@ -20,7 +20,6 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}" />
 </head>
 
-<<<<<<< HEAD
     <body bgcolor="LightGray">
     {% if title == 'Log In' %}
     {% elif title == 'Sign Up' %}
@@ -44,7 +43,6 @@
         </ul>
         {% endif %}
         {% endwith %}
-=======
 <body>
     <svg class="hidden">
         <!-- made with Icomoon.io, Icons from http://www.entypo.com/ and https://icomoon.io/ -->
@@ -88,7 +86,6 @@
             <a href="{{ url_for('logout') }}" class="btn btn-link">Logout</a>
         </section>
     </header>
->>>>>>> 496051eca505e2a2c986b02c9219ed622a606e09
     {% block content %}{% endblock %}
 </body>
 
