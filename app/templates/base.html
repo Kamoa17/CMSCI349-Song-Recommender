@@ -63,6 +63,15 @@
             <a href="{{ url_for('logout') }}" class="btn btn-link">Logout</a>
         </section>
     </header>
+     <label for="msg"><b> Answer some questions to get music recommendations</b></label>
+   <h4>Select your desired music genre</h4>
+    <form>
+       <select name="droptdown">
+           <option value ="Country">Country</option>
+           <option value="Hip-Hop">Hip-Hop</option>
+           <option value="Rap">Rap</option>
+       </select>
+   </form>
     {% block content %}{% endblock %}
 </body>
 
