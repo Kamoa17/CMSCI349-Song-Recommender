@@ -1,5 +1,7 @@
 from google.cloud import datastore
 import json
+import dotenv
+dotenv.load_dotenv(dotenv.find_dotenv())
 
 import dotenv
 
