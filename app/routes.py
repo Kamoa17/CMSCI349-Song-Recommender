@@ -1,6 +1,6 @@
 import json
 from app import app
-from flask import render_template, flash, redirect, url_for, request, Response
+from flask import render_template, flash, redirect, url_for, request, Response, session
 from app.forms import Login, SignUp
 from app.api.database import (
     get_song_metadata,
@@ -15,11 +15,16 @@ from app.api.spotify import (
     recommendations_by_artist,
     recommendations_by_genre,
 )
-
+# new packages imported
+from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 
 @app.route("/")
 @app.route("/start")
 def start():
+    # when the program initiates
+    # clear the session
+    session.clear()
     return render_template("start.html", title="Start")
 
 
@@ -28,11 +33,30 @@ def signup():
     form = SignUp()  # instantiate object
     if form.validate_on_submit():
         flash(
-            "Email: {} | User ID: {} | Password: {}".format(
-                form.email.data, form.username.data, form.password.data
+            "Email: {} | First Name: {} | Last Name: {} | User ID: {} | Password: {}".format(
+                form.email.data, form.firstName.data, form.lastName.data, form.username.data, form.password.data
             )
         )
         # flash to display messages for prototype, driver
+        user = {
+            "accountCreated": datetime.now().strftime("%d-%m-%Y %H:%M:%S EST"),
+            "email": form.email.data,
+            "firstName": form.firstName.data,
+            "lastName" : form.lastName.data,
+            "username": form.username.data,
+            "password": generate_password_hash(form.password.data)
+        }
+        # add user to database
+        add_user(user)
+        # add user to the session, then redirect him to home
+        # I created a new user object so that the password hash is not seen by anyone with access to the session
+        session_user = {
+            "email":user['email'],
+            "firstName": user["firstName"],
+            "lastName": user["lastName"],
+            "username":user["username"]
+        }
+        session["user"] = session_user
         return redirect(url_for("home"))  # navigation when complete
     return render_template("signup.html", title="Sign Up", form=form)  # pass form
 
@@ -56,7 +80,7 @@ def logout():
 
 @app.route("/home")
 def home():
-    return render_template("home.html", title="Home")
+    return render_template("home.html", title="Home", user=session['user'])
 
 @app.route("/recommendation")
 def recommendation():

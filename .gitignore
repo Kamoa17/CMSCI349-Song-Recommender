@@ -144,3 +144,6 @@ cython_debug/
 
 # google auth credentials
 application_default_credentials.json
+
+# files to ignore
+testing.py
