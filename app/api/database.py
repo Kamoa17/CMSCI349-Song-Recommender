@@ -34,6 +34,34 @@ def get_user(user_id: int):
     user = list(query.fetch())
     return user
 
+def get_user_by_username(username: str):
+    """Get the user info
+
+    Args:
+        username (str): The username of a user, it should be unique
+
+    Returns:
+        List[<datastore.Entity>]: The user info
+    """
+    query = datastore_client.query(kind="users")
+    query = query.add_filter("username", "=", username)
+    user = list(query.fetch())
+    return user
+
+def get_user_by_email(email: str):
+    """Get the user info
+
+    Args:
+        email (str): The email of a user, it should be unique
+
+    Returns:
+        List[<datastore.Entity>]: The user info
+    """
+    query = datastore_client.query(kind="users")
+    query = query.add_filter("email", "=", email)
+    user = list(query.fetch())
+    return user
+
 
 def add_song_metadata(song_info: dict):
     """Add a new song metadata

@@ -8,6 +8,8 @@ from app.api.database import (
     add_user,
     get_user,
     get_all_songs,
+    get_user_by_username,
+    get_user_by_email
 )
 # pylint: disable=unused-import
 from app.api.spotify import (
@@ -32,32 +34,39 @@ def start():
 def signup():
     form = SignUp()  # instantiate object
     if form.validate_on_submit():
-        flash(
-            "Email: {} | First Name: {} | Last Name: {} | User ID: {} | Password: {}".format(
-                form.email.data, form.firstName.data, form.lastName.data, form.username.data, form.password.data
-            )
-        )
-        # flash to display messages for prototype, driver
-        user = {
-            "accountCreated": datetime.now().strftime("%d-%m-%Y %H:%M:%S EST"),
-            "email": form.email.data,
-            "firstName": form.firstName.data,
-            "lastName" : form.lastName.data,
-            "username": form.username.data,
-            "password": generate_password_hash(form.password.data)
-        }
-        # add user to database
-        add_user(user)
-        # add user to the session, then redirect him to home
-        # I created a new user object so that the password hash is not seen by anyone with access to the session
-        session_user = {
-            "email":user['email'],
-            "firstName": user["firstName"],
-            "lastName": user["lastName"],
-            "username":user["username"]
-        }
-        session["user"] = session_user
-        return redirect(url_for("home"))  # navigation when complete
+        # validate if username is available
+        try:
+            # if it does not fail, it means that the username is already taken
+            entity = get_user_by_username(form.username.data)[0]
+            flash("Username is not available")
+        except IndexError:
+            # if not a user found with that username, the username is valid. 
+            # we also need to check if the email is valid
+            try:
+                entity = get_user_by_email(form.email.data)[0]
+                flash("Email is not available")
+            except IndexError:
+                # then username and emal are valid, now we can create the account
+                user = {
+                    "accountCreated": datetime.now().strftime("%d-%m-%Y %H:%M:%S EST"),
+                    "email": form.email.data,
+                    "firstName": form.firstName.data,
+                    "lastName" : form.lastName.data,
+                    "username": form.username.data,
+                    "password": generate_password_hash(form.password.data)
+                }
+                # add user to database
+                add_user(user)
+                # add user to the session, then redirect him to home
+                # I created a new user object so that the password hash is not seen by anyone with access to the session
+                session_user = {
+                    "email":user['email'],
+                    "firstName": user["firstName"],
+                    "lastName": user["lastName"],
+                    "username":user["username"]
+                }
+                session["user"] = session_user
+                return redirect(url_for("home"))  # User is automatically logged in
     return render_template("signup.html", title="Sign Up", form=form)  # pass form
 
 
@@ -65,11 +74,28 @@ def signup():
 def login():
     form = Login()  # instantiate object
     if form.validate_on_submit():
-        flash(
-            "User ID: {} | Password: {}".format(form.username.data, form.password.data)
-        )
-        # flash to display messages for prototype, driver
-        return redirect(url_for("home"))  # navigation when complete
+        # validate the user, if the username, then it will try to authenticate password
+        try:
+            entity = get_user_by_username(form.username.data)[0]
+            # check if password matches, if then, redirect it to the homepage
+            if check_password_hash(entity['password'], form.password.data):
+                # user is authenticated
+                session_user = {
+                "email":entity['email'],
+                "firstName": entity["firstName"],
+                "lastName": entity["lastName"],
+                "username":entity["username"]
+                }
+                # add user to session
+                session["user"] = session_user
+                return redirect(url_for("home"))
+            else:
+                # user is not authenticated flash error message
+                raise IndexError # just go to the except
+        except IndexError:
+            # not an user with that username
+            # flash an error message
+            flash('Invalid username or password')
     return render_template("login.html", title="Log In", form=form)  # pass form
 
 
@@ -80,7 +106,7 @@ def logout():
 
 @app.route("/home")
 def home():
-    return render_template("home.html", title="Home", user=session['user'])
+    return render_template("home.html", title="Home", user=session['user']) 
 
 @app.route("/recommendation")
 def recommendation():
