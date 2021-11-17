@@ -72,9 +72,7 @@ def liked_songs():
 
 @app.route("/account")
 def user_account():
-    # user = get_user() 
-    return "Account Page"
-    #return render_template("account.html")
+    return render_template("account.html", title="Account")
 
 
 @app.route("/songs")
