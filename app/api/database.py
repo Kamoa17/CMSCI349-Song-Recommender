@@ -1,6 +1,7 @@
 from google.cloud import datastore
 import json
 import dotenv
+from google.cloud.datastore import query
 dotenv.load_dotenv(dotenv.find_dotenv())
 
 import dotenv
@@ -33,6 +34,16 @@ def get_user(user_id: int):
     query = query.add_filter("id", "=", user_id)
     user = list(query.fetch())
     return user
+
+def get_all_users():
+    """Get all users
+    
+    Returns:
+        List[<datastore.Entity>]: List of users
+    """
+    query = datastore_client.query(kind="users")
+    users = list(query.fetch())
+    return users
 
 def get_user_by_username(username: str):
     """Get the user info
