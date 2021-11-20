@@ -1,0 +1,14 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<label for="msg"><b> Answer some questions to get music recommendations</b></label>
+   <h4>Select your desired music genre</h4>
+    <form>
+       <select name="droptdown" id = "genre">
+           <option value ="Country">Country</option>
+           <option value="Hip-Hop">Hip-Hop</option>
+           <option value="Rap">Rap</option>
+       </select>
+   </form>
+{% endblock %}
