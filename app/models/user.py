@@ -10,26 +10,12 @@ datastore_client = datastore.Client(project="song-recommender-team2")
 
 class User(UserMixin):
 
-    def __init__(self, firstName, lastName, email, username, password) -> None:
+    def __init__(self, user_id, firstName, lastName, email, username) -> None:
+        self.user_id = user_id
         self.firstName = firstName
         self.lastName = lastName
         self.email = email
         self.username = username
-        self.password = password
-
-    def hash_password(self):
-        return generate_password_hash(self.password)
-        
-    def toDict(self):
-        return {
-            "firstName" : self.firstName,
-            "lastName" : self.lastName,
-            "username" : self.username,
-            "email" : self.email
-        }
-
-    def check_hashed_password(self, password):
-        return check_password_hash(self.hashed_password, password)
 
     def is_authenticated(self):
         return True

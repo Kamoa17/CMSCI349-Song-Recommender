@@ -43,11 +43,11 @@ def load_user(user_id):
     user = get_user(user_id)
     user_entity = user[0]
     user = User(
+            user_id=user_id,
             firstName= user_entity["firstName"],
             lastName= user_entity["lastName"],
             email= user_entity["email"],
-            username= user_entity["username"],
-            password= user_entity["password"]
+            username= user_entity["username"]
         )
     return user
 
@@ -80,19 +80,27 @@ def signup():
 
         # if anything was returned before, then the user is valid
         # create user model
+        # add user to database
+        hashed_password = generate_password_hash(form.password.data)
+        user_dict = {
+            "firstName": form.firstName.data,
+            "lastName": form.lastName.data,
+            "email": form.email.data,
+            "username": form.username.data,
+            "password": hashed_password
+        }
+        user_dict["creationDate"] = datetime.now().isoformat()
+        add_user(user_dict)
+        # login user with flask login
+        # get the user
+        user = get_user_by_username(form.username.data)[0]
         user = User(
+            user_id=user.id,
             firstName= form.firstName.data,
             lastName= form.lastName.data,
             email= form.email.data,
-            username= form.username.data,
-            password= form.password.data
+            username= form.username.data
         )
-        # add user to database
-        user_dict = user.toDict()
-        user_dict["creationDate"] = datetime.now().isoformat()
-        user_dict["password"] = user.hash_password()
-        add_user(user_dict)
-        # login user with flask login
         login_user(user)
         return redirect(url_for("home"))  # User is automatically logged in
     return render_template("signup.html", title="Sign Up", form=form)  # pass form
@@ -110,11 +118,11 @@ def login():
         user = user[0]
         # check if password matches, if then, redirect it to the homepage
         if check_password_hash(user['password'], form.password.data):
-            user = User(firstName=user['firstName'],
+            user = User(user_id=user.id,
+                        firstName=user['firstName'],
                         lastName=user['lastName'],
                         email=user['email'],
                         username=user['username'],
-                        password=form.password.data
                         )
             # login user with flask login
             login_user(user, remember=True)
