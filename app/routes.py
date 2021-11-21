@@ -41,8 +41,15 @@ def load_user(user_id):
         <datastore.Entity>: User info 
     """
     user = get_user(user_id)
-    if len(user) != 0:
-        return user[0]
+    user_entity = user[0]
+    user = User(
+            firstName= user_entity["firstName"],
+            lastName= user_entity["lastName"],
+            email= user_entity["email"],
+            username= user_entity["username"],
+            password= user_entity["password"]
+        )
+    return user
 
 @app.route("/")
 @app.route("/start")
@@ -83,6 +90,7 @@ def signup():
         # add user to database
         user_dict = user.toDict()
         user_dict["creationDate"] = datetime.now().isoformat()
+        user_dict["password"] = user.hash_password()
         add_user(user_dict)
         # login user with flask login
         login_user(user)
@@ -122,11 +130,10 @@ def logout():
     logout_user()
     return render_template("logout.html", title="Log Out")
 
-
 @app.route("/home")
-#@login_required
+@login_required
 def home():
-    import pdb;pdb.set_trace()
+    #import pdb;pdb.set_trace()
     return render_template("home.html", title="Home", user=current_user) 
 
 @app.route("/recommendation")

@@ -15,15 +15,17 @@ class User(UserMixin):
         self.lastName = lastName
         self.email = email
         self.username = username
-        self.hashed_password = generate_password_hash(password)
+        self.password = password
+
+    def hash_password(self):
+        return generate_password_hash(self.password)
         
     def toDict(self):
         return {
             "firstName" : self.firstName,
             "lastName" : self.lastName,
             "username" : self.username,
-            "email" : self.email,
-            "password":self.hashed_password
+            "email" : self.email
         }
 
     def check_hashed_password(self, password):

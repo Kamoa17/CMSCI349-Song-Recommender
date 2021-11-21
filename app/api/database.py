@@ -31,7 +31,8 @@ def get_user(user_id: int):
         List[<datastore.Entity>]: The user info
     """
     query = datastore_client.query(kind="users")
-    query = query.add_filter("id", "=", user_id)
+    query_key = datastore_client.key("users",user_id)
+    query = query.add_filter("__key__", "=", query_key)
     user = list(query.fetch())
     return user
 
