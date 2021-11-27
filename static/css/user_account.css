@@ -3,7 +3,7 @@ body {background-color: white;}
 .signupDiv {
     width: 35%;
     padding-left: 85px;
-    padding-right: 84px;
+    padding-right: 78px;
     padding-top:20px;
     border-style: solid;
     margin-left:460px;
@@ -12,3 +12,23 @@ body {background-color: white;}
 
 }
 
+img {
+  float: right;
+  position: relative;
+  top: -60px;
+  left: 30px;
+  width:120px;
+
+}
+
+.loginDiv {
+    width: 35%;
+    padding-left: 85px;
+    padding-right: 85px;
+    padding-top:20px;
+    border-style: solid;
+    margin-left:460px;
+
+    background: white;
+
+}
