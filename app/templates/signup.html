@@ -2,8 +2,8 @@
 
 {% block content %}
 
- <div class="myDiv">
-<link rel="stylesheet" href = "{{ url_for('static', filename='styles/user_account.css') }}">
+<div class="signupDiv">
+<link rel="stylesheet" href = "{{ url_for('static', filename='css/user_account.css') }}">
 <h1>Sign Up </h1>
 
     <form action = "" method = "post" novalidate>
@@ -11,7 +11,7 @@
         {{ form.hidden_tag() }}
 
          <p>Please fill in this form to create an account.</p>
-        <div class="signupDiv">
+
         <p>
             {{ form.email.label }}<br>
             {{ form.email(size = 32) }}
@@ -37,12 +37,11 @@
             {% endfor %}
 
 
-
-        </div>
     <p>
         <button class="grey"><a href="{{ url_for('login') }}"> Cancel</button></a>
             {{ form.submit() }}</p>
 
+     </div>
     </form>
 
 {% endblock %}

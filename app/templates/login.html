@@ -1,7 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Sign In</h1>
+<div class="loginDiv">
+    <link rel="stylesheet" href = "{{ url_for('static', filename='css/user_account.css') }}">
+    <h1> Welcome </h1>
+     <img src="{{url_for('static', filename='Images/logo1.jpg')}}">
+     <br />
+
+
     <form action = "" method = "post" novalidate>
 
         {{ form.hidden_tag() }}
@@ -20,10 +26,11 @@
             <span style="color: red">[{{ error }}]</span>
             {% endfor %}
         </p>
-        <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
+
+      <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
         <p>{{ form.submit() }}</p>
 
         <a href="{{ url_for('signup') }}">New? Create an account!</a>
-
+</div>
     </form>
 {% endblock %}
