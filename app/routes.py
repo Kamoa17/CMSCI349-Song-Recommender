@@ -1,29 +1,39 @@
 import json
+import logging
+from datetime import datetime
+from typing import List
+
+from flask import Response, flash, redirect, render_template, request, url_for
+from flask_login import (
+    LoginManager,
+    current_user,
+    login_required,
+    login_user,
+    logout_user,
+)
+from google.cloud import datastore
+from werkzeug.security import check_password_hash
+
 from app import app
-from flask import render_template, flash, redirect, url_for, request, Response, session
-from flask_login import login_user, LoginManager, login_required, logout_user, current_user
-from app.forms import Login, SignUp
 from app.api.database import (
-    get_song_metadata,
     add_song_metadata,
     add_user,
-    get_user,
     get_all_songs,
+    get_song_metadata,
+    get_user,
+    get_user_by_email,
     get_user_by_username,
-    get_user_by_email, 
-    get_all_users
 )
-# pylint: disable=unused-import
+
 from app.api.spotify import (
+    get_new_releases,
     get_track_metadata,
-    recommendations_by_artist,
     recommendations_by_genre,
 )
+from app.forms import Login, SignUp
+
 # Models
 from app.models.user import User
-
-from datetime import datetime
-from werkzeug.security import generate_password_hash, check_password_hash
 
 # set up flask login
 login_manager = LoginManager()
@@ -31,37 +41,38 @@ login_manager.login_view = "login"
 login_manager.init_app(app)
 login_manager.login_message = "Login to have access to that page"
 
+
 @login_manager.user_loader
-def load_user(user_id):
+def load_user(user_id: int) -> List[datastore.Entity]:
     """Load the user information just by ID
 
     Args: user_id (int): The unique identifier of the user in datastore
 
     Returns:
-        <datastore.Entity>: User info 
+        <datastore.Entity>: User info
     """
-    user = get_user(user_id)
-    user_entity = user[0]
-    user = User(
-            firstName= user_entity["firstName"],
-            lastName= user_entity["lastName"],
-            email= user_entity["email"],
-            username= user_entity["username"],
-            password= user_entity["password"]
+    user = get_user(int(user_id))
+    if len(user) > 0:
+        user_entity = user[0]
+        user = User(
+            firstname=user_entity["firstname"],
+            lastname=user_entity["lastname"],
+            email=user_entity["email"],
+            username=user_entity["username"],
+            password=user_entity["password"],
         )
-    return user
-
-@app.route("/")
-@app.route("/start")
-def start():
-    # when the program initiates
-    # clear the session
-    session.clear()
-    return render_template("start.html", title="Start")
+        return user
 
 
+@app.route("/api/signup")
 @app.route("/signup", methods=["GET", "POST"])
-def signup():
+def signup() -> Response:
+    """Sing up route. This route adds tha new user to the user database
+
+    Returns:
+        Response: Returns the sign-up page template or redirects the user
+                to the sign up page if the user is not aviailable
+    """
     form = SignUp()  # instantiate object
     if form.validate_on_submit():
         # validate if username is available
@@ -71,7 +82,7 @@ def signup():
         if len(entity) != 0:
             flash("Username is not available")
             return redirect(url_for("signup"))
-            
+
         # checking if email is valid
         entity = get_user_by_email(form.email.data)
         if len(entity) != 0:
@@ -81,15 +92,15 @@ def signup():
         # if anything was returned before, then the user is valid
         # create user model
         user = User(
-            firstName= form.firstName.data,
-            lastName= form.lastName.data,
-            email= form.email.data,
-            username= form.username.data,
-            password= form.password.data
+            firstname=form.firstName.data,
+            lastname=form.lastName.data,
+            email=form.email.data,
+            username=form.username.data,
+            password=form.password.data,
         )
         # add user to database
-        user_dict = user.toDict()
-        user_dict["creationDate"] = datetime.now().isoformat()
+        user_dict = vars(user)
+        user_dict["creation_date"] = datetime.now().isoformat()
         user_dict["password"] = user.hash_password()
         add_user(user_dict)
         # login user with flask login
@@ -98,9 +109,33 @@ def signup():
     return render_template("signup.html", title="Sign Up", form=form)  # pass form
 
 
+@app.route("/api/login")
 @app.route("/login", methods=["GET", "POST"])
-def login():
+def login() -> Response:
+    """Log in route. This route handles user logins
+
+    Returns:
+        Response: Returns the login page template or redirects the user
+                    to the login page if the user is not aviailable
+    """
     form = Login()  # instantiate object
+    if "/api/" in request.url_rule.rule:
+        form_data = request.form
+        username = form_data["username"]
+        password = form_data["password"]
+        user = get_user_by_username(username)[0]
+        if check_password_hash(user["password"], password):
+            user = User(
+                user["firstname"],
+                user["lastname"],
+                user["email"],
+                user["username"],
+                password,
+            )
+            login_user(user)
+            return "User logged in"
+        return "None"
+
     if form.validate_on_submit():
         # validate the user, if the username, then it will try to authenticate password
         user = get_user_by_username(form.username.data)
@@ -109,13 +144,14 @@ def login():
             return redirect(url_for("login"))
         user = user[0]
         # check if password matches, if then, redirect it to the homepage
-        if check_password_hash(user['password'], form.password.data):
-            user = User(firstName=user['firstName'],
-                        lastName=user['lastName'],
-                        email=user['email'],
-                        username=user['username'],
-                        password=form.password.data
-                        )
+        if check_password_hash(user["password"], form.password.data):
+            user = User(
+                firstname=user["firstname"],
+                lastname=user["lastname"],
+                email=user["email"],
+                username=user["username"],
+                password=form.password.data,
+            )
             # login user with flask login
             login_user(user, remember=True)
             return redirect(url_for("home"))
@@ -125,80 +161,136 @@ def login():
     return render_template("login.html", title="Log In", form=form)  # pass form
 
 
+@app.route("/api/logout")
 @app.route("/logout")
-def logout():
+@login_required
+def logout() -> Response:
+    """Log out the user, destroying the session information
+
+    Returns:
+        Response: The logout page
+    """
     logout_user()
-    return render_template("logout.html", title="Log Out")
+    return redirect("/")
+
 
 @app.route("/home")
-@login_required
-def home():
-    #import pdb;pdb.set_trace()
-    return render_template("home.html", title="Home", user=current_user) 
+@app.route("/")
+def home() -> Response:
+    """The Homepage route
 
-@app.route("/recommendation")
-@login_required
-def recommendation():
-    return render_template("recommendation.html", title="Recommendation")
-
-@app.route("/liked_songs",methods=["GET","POST"])
-@login_required
-def liked_songs():
-    # for future backend:
-    # retrieve songs from liked songs from the user
-    # transform the data back into something to present
-    return render_template("liked_songs.html", title="Liked Songs")
+    Returns:
+        Response: A rendered template of the home page
+    """
+    recommendations_data = recommendations_by_genre(seed_genre="pop", number_of_recs=21)
+    new_releases = get_new_releases()
+    return render_template(
+        "home.html",
+        title="Home",
+        recommendations_data=recommendations_data,
+        new_release_data=new_releases,
+    )
 
 
+@app.route("/api/account")
 @app.route("/account")
-def user_account():
-    # user = get_user() 
-    return "Account Page"
-    #return render_template("account.html")
+@login_required
+def user_account() -> Response:
+    """The User Account route
+
+    Returns:
+        Response: The rendered user account page
+    """
+    user = current_user
+    return user.username
 
 
+@app.route("/api/songs")
 @app.route("/songs")
-def user_songs():
-    return render_template("songs.html")
+@login_required
+def songs() -> Response:
+    """The user's Song Library page
+
+    Returns:
+        Response: The user's song page
+    """
+    user_id = current_user.get_id()
+    if not isinstance(user_id, int):
+        user_id = int(user_id)
+
+    all_songs = get_all_songs(user_id=user_id)
+    if "/api/" in request.url_rule.rule:
+        response = Response(all_songs, 200, mimetype="application/json")
+        response.headers["Content-Type"] = "application/json;;charset=iso-8859-1"
+        return response
+    return render_template(
+        "songs.html", title="Liked Songs", data=json.loads(all_songs)
+    )
 
 
-# API Routes
+# Other API Routes
 @app.route("/api/song/metadata/<int:song_id>", methods=["GET"])
 @app.route("/song/<int:song_id>")
-def get_song_meta(song_id):
+@login_required
+def get_song_meta(song_id: str) -> Response:
+    """Get the metadata of a particular song
+
+    Args:
+        song_id (str): The song's ID
+
+    Returns:
+        Response: A json string with the song metadata
+    """
     song_meta = get_song_metadata(song_id=song_id)
     return song_meta
 
 
-@app.route("/api/songs/list")
-@app.route("/songs/list")
-def list_all_songs():
-    all_songs = get_all_songs()
-    if "/api/" in request.url_rule.rule:
-        r = Response(all_songs, 200, mimetype="application/json")
-        r.headers["Content-Type"] = "application/json;;charset=iso-8859-1"
-        return r
-    return render_template("songs.html", title="Liked Songs", data=json.loads(all_songs))
-
-
 @app.route("/api/song/metadata/add/<track_id>", methods=["POST"])
-def add_song_meta(track_id):
+@login_required
+def add_song_meta(track_id: str) -> Response:
+    """Adds a new song to the user's song collection
 
-    song_data = request.json
-    add_song_metadata(song_info=song_data)
+    Args:
+        track_id (str): The song's ID
 
-    # @TODO add error handling
-    return "done"
+    Returns:
+        Response: A json response object
+
+    """
+    response = Response(
+        json.dumps({"response": 200, "message": "Song added"}),
+        200,
+        mimetype="application/json",
+    )
+    response.headers["Content-Type"] = "application/json;;charset=iso-8859-1"
+    try:
+        song_data = get_track_metadata(track_id=track_id)
+        song_data["user_id"] = current_user.get_id()
+        add_song_metadata(song_info=song_data)
+
+    except Exception as ex:
+        logging.exception(ex)
+        response = Response(
+            json.dumps(
+                {"response": 500, "message": "An error occurred while adding the song"}
+            ),
+            status=500,
+            mimetype="application/json",
+        )
+    return response
 
 
-@app.route("/api/users/add", methods=["POST"])
-@app.route("/add-user", methods=["POST", "GET"])
-def add_new_user():
-    if request.method == "POST":
-        user_data = request.json
-        add_user(user_info=user_data)
+@app.route("/api/recommendations", methods=["POST"])
+@login_required
+def recommendations():
+    """Get song recommendations
 
-        # @TODO add error handling
-        return "done"
-    # return render_template("")
-    return "done"
+    Returns:
+        Response: A json list of recommended songs based on user input
+    """
+    user_form = request.json
+    seed_genre = user_form["genre"]
+    recommendations_data = recommendations_by_genre(
+        seed_genre=seed_genre, number_of_recs=21
+    )
+    return json.dumps(recommendations_data)
