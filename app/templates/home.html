@@ -1,10 +1,79 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="hero hero-sm bg-gray">
+    <div class="hero-body">
+        <h1>Recommendations</h1>
+        <p>Recommended songs based on your library</p>
+    </div>
+</div>
 
-<h1>HOME PAGE</h1>
+<section class="recommendations-content">
+    <main>
+        <div class="view view--grid view--current">
+            <ul class="grid grid-horizontal" id="recommendations-container">
+                {% for recommendations in recommendations_data %}
+                <li class="grid__item">
+                    <span class="material-icons like-button"
+                        data-song-id="{{recommendations['track_id']}}">thumb_up</span>
+                    <a class="grid__link" href="{{ recommendations['track_url'] }}">
+                        <div class="img-wrap img-wrap--grid">
+                            <svg class="lp lp--grid">
+                                <use xlink:href="#icon-lp-mini"></use>
+                            </svg>
+                            <img class="img img--grid" src="{{ recommendations['album_cover_image_url'] }}" alt="{{ recommendations['album_name'] }}" />
+                        </div>
+                        <span class="year">{{ recommendations['album_release_date'] }}</span>
+                        <h2 class="artist">
+                            <span>{{ recommendations["artists"] | join(", ") }}</span>
+                        </h2>
+                        <h3 class="title">{{ recommendations['track_name'] }}</h3>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </main>
 
-<h3>Hello {{ user.firstName }}, your username is: {{ user.username }}</h3>
-<h4>We are glad to introduce you to our beloved Song Recommender!</h4>
+</section>
+<div class="hero hero-sm bg-gray">
+    <div class="hero-body">
+        <h1>New Releases</h1>
+        <p>Newly released songs</p>
+    </div>
+</div>
+<section class="new-releases-content">
+    <main>
+        <div class="view view--grid view--current">
+            <ul class="grid grid-horizontal">
+                {% for release in new_release_data %}
+                <li class="grid__item">
+                    <!-- <i class="icon icon-check like-button" data-song-id="{{release['id']}}"></i> -->
+                    <a class="grid__link" href="{{ release['external_urls']['spotify'] }}">
+                        <div class="img-wrap img-wrap--grid">
+                            <svg class="lp lp--grid">
+                                <use xlink:href="#icon-lp-mini"></use>
+                            </svg>
+                            <img class="img img--grid" src="{{ release['images'][0]['url']}}" alt="" />
+                        </div>
+                        <span class="year">{{ release['release_date'] }}</span>
+                        <h2 class="artist">
+                            {% for artist in release["artists"] %}
+                            <span>{{ artist['name'] }}, </span>
+                            {% endfor %}
+                        </h2>
+                        <h3 class="title">{{ release['name'] }}</h3>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </main>
+</section>
+
+<section class="chatbot">
+    {% include "chatbot.html" %}
+</section>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
 {% endblock %}

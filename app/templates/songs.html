@@ -7,30 +7,32 @@
         <p>Library of liked songs</p>
     </div>
 </div>
+{% if data|length >= 1 %}
+    <main>
+        <div class="view view--grid view--current">
+            <ul class="grid">
+                {% for track in data %}
+                <li class="grid__item">
+                    <a class="grid__link" href="{{ track['track_url'] }}">
+                        <div class="img-wrap img-wrap--grid">
+                            <svg class="lp lp--grid">
+                                <use xlink:href="#icon-lp-mini"></use>
+                            </svg>
+                            <img class="img img--grid" src="{{ track['album_cover_image_url']}}" alt="album1" />
+                        </div>
+                        <span class="year">{{ track['album_release_date'] }}</span>
+                        <h2 class="artist">
+                            <span>{{ track["artists"] | join(", ") }}</span>
+                        </h2>
+                        <h3 class="title">{{ track['track_name'] }}</h3>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </main>
+{% else %}
+    {{ empty_state()}}
+{% endif %}
 
-<main>
-    <div class="view view--grid view--current">
-        <ul class="grid">
-            {% for track in data %}
-            <li class="grid__item">
-                <a class="grid__link" href="{{ track['track_url'] }}">
-                    <div class="img-wrap img-wrap--grid">
-                        <svg class="lp lp--grid">
-                            <use xlink:href="#icon-lp-mini"></use>
-                        </svg>
-                        <img class="img img--grid" src="{{ track['album_cover_image_url']}}" alt="album1" />
-                    </div>
-                    <span class="year">{{ track['album_release_date'] }}</span>
-                    <h2 class="artist">
-                        {% for artist in track["artists"] %}
-                        <span>{{ artist }}, </span>
-                        {% endfor %}
-                    </h2>
-                    <h3 class="title">{{ track['track_name'] }}</h3>
-                </a>
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
-</main>
 {% endblock %}
