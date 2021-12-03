@@ -11,15 +11,19 @@
     <title>{{ title }}</title>
     {% endif %}
 
-    <!-- Load Spectre CSS library for styling-->
+    <!-- Load external libraries -->
     <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
     <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-exp.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-icons.min.css">
-
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='libs/snacky.min.css') }}">
+    <script src="{{ url_for('static', filename='libs/snacky.min.js') }}"></script>
+    
     <!-- Load static files -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}" />
 </head>
-
 <body>
     <svg class="hidden">
         <!-- made with Icomoon.io, Icons from http://www.entypo.com/ and https://icomoon.io/ -->
@@ -50,19 +54,54 @@
             </symbol>
         </defs>
     </svg>
+    {% if current_user.is_authenticated %}
     <header class="navbar">
         <section class="navbar-section">
-            <a href="{{ url_for('home') }}" class="btn btn-link">Home</a>
-            <a href="{{ url_for('user_songs') }}" class="btn btn-link">Songs</a>
+            <a href="{{ url_for('home') }}" class="btn btn-link d-flex"><span class="material-icons mx-1">home</span>Home</a>
+            <a href="{{ url_for('songs') }}" class="btn btn-link d-flex"><span class="material-icons mx-1">library_music</span>Song Library</a>
         </section>
         <section class="navbar-center">
-            <h3 class="h3">Song Recommender</h3>
+            <h3 class="h3 app-logo">Musique</h3>
         </section>
         <section class="navbar-section">
-            <a href="{{ url_for('user_account') }}" class="btn btn-link">Account</a>
-            <a href="{{ url_for('logout') }}" class="btn btn-link">Logout</a>
+            <a href="{{ url_for('user_account') }}" class="btn btn-link d-flex"><span class="material-icons mx-1">person</span>Account</a>
+            <a href="{{ url_for('logout') }}" class="btn btn-link d-flex"><span class="material-icons mx-1">logout</span>Logout</a>
         </section>
     </header>
+    {% else %}
+    <header class="navbar">
+        <section class="navbar-section">
+            <a href="{{ url_for('home') }}" class="btn btn-link d-flex"><span class="material-icons mx-1">home</span>Home</a>
+        </section>
+        <section class="navbar-center">
+            <h3 class="h3 app-logo">Musique</h3>
+        </section>
+        <section class="navbar-section">
+            <a href="{{ url_for('signup') }}" class="btn btn-link d-flex"><span class="material-icons mx-1">person_add</span>Sign Up</a>
+            <a href="{{ url_for('login') }}" class="btn btn-link d-flex"><span class="material-icons mx-1">login</span>Login</a>
+        </section>
+    </header>
+    {% endif %}
+    {% macro empty_state(title="Your song library is empty.",
+            subtitle="Click the button to get song recommendations.",
+            action = None,
+            action_text = "Get Recommendations",
+            icon="library_music") -%}
+        <main class="empty-content">
+            <div class="empty">
+                <div class="empty-icon">
+                    <span class="material-icons icon-large">{{ icon }}</span>
+                </div>
+                <p class="empty-title h5">{{ title }}</p>
+                <p class="empty-subtitle">{{ subtitle }}</p>
+                {% if action %}
+                    <div class="empty-action">
+                        <button class="btn btn-primary">{{ action_text }}</button>
+                    </div>
+                {% endif %}
+            </div>
+        </main>
+    {%- endmacro %}
     {% block content %}{% endblock %}
 </body>
 

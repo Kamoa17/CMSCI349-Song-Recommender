@@ -1,17 +1,20 @@
-import os
-from dotenv import load_dotenv
+import dotenv
 
-load_dotenv()
+dotenv.load_dotenv(dotenv.find_dotenv())
+config = dotenv.dotenv_values(dotenv.find_dotenv())
 
 
 class Config(object):
-    SECRET_KEY = os.environ.get("SECRET_KEY")
-    # SPOTIFY_CLIENT_ID = os.environ.get("SPOTIFY_CLIENT_ID") or None
-    # SPOTIFY_CLIENT_SECRET = os.environ.get("SPOTIFY_CLIENT_SECRET") or None
+    SECRET_KEY = config.get("SECRET_KEY")
+    SPOTIFY_CLIENT_ID = config.get("SPOTIPY_CLIENT_ID") or None
+    SPOTIFY_CLIENT_SECRET = config.get("SPOTIPY_CLIENT_SECRET") or None
 
     # Flask
-    # FLASK_APP = os.environ.get("FLASK_APP") or "app.py"
-    # FLASK_ENV = os.environ.get("FLASK_ENV")
+    FLASK_APP = config.get("FLASK_APP") or "app.py"
+    FLASK_ENV = config.get("FLASK_ENV") or "production"
 
     # Google Cloud API Credentials
-    #GOOGLE_APPLICATION_CREDENTIALS = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+    GOOGLE_APPLICATION_CREDENTIALS = (
+        config.get("GOOGLE_APPLICATION_CREDENTIALS")
+        or "application_default_credentials.json"
+    )

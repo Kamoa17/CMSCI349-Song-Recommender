@@ -1,0 +1,55 @@
+{% block chatbot %}
+<!-- form input control -->
+<div class="fab-container popover popover-top">
+    <button class="fab s-circle"><span class="material-icons fab-icon">forum</span></button>
+    <div class="popover-container">
+        <div class="chatbot-content">
+            <header class="chatbot-navbar">
+                <section class="navbar-center">
+                    <h5 class="h5" style="margin: 0px;">Musique Chatbot</h3>
+                </section>
+            </header>
+            <div class="chatbot-inner-content">
+                <form class="form" name="chatbot-form" method="post">
+                    <div class="form-group">
+                        <label class="form-label" for="genre">Genre</label>
+                        <select class="form-select" id="genre" name="genre">
+                            <option>Choose a genre</option>
+                            <option selected>Pop</option>
+                            <option>Rock</option>
+                            <option>Hip-Hop</option>
+                            <option>Jazz</option>
+                            <option>Sad</option>
+                            <option>Happy</option>
+                            <option>Chill</option>
+                            <option>Study</option>
+                            <option>Country</option>
+                            <option>Folk</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="target_popularity">Popularity</label>
+                        <input class="slider tooltip" type="range" min="0" max="100" value="50"
+                            oninput="this.setAttribute('value', this.value);" id="target_popularity"
+                            name="target_popularity">
+                        <label class="form-label" for="target_acousticness">Acousticness</label>
+                        <input class="slider tooltip" type="range" min="0" max="100" value="50"
+                            oninput="this.setAttribute('value', this.value);" id="target_acousticness"
+                            name="target_acousticness">
+                        <label class="form-label" for="target_danceability">Danceability</label>
+                        <input class="slider tooltip" type="range" min="0" max="100" value="50"
+                            oninput="this.setAttribute('value', this.value);" id="target_danceability"
+                            name="target_danceability">
+                        <label class="form-label" for="target_key">Key</label>
+                        <input class="slider tooltip" type="range" min="0" max="11" value="3" step="1" data-tooltip="C"
+                            oninput="this.setAttribute('data-tooltip', ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'].at(parseInt(this.value)));"
+                            id="target_key" name="target_key">
+                    </div>
+                    <button class="btn btn-primary float-right" id="recommendation-btn">Get Recommendations</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+{% endblock %}
