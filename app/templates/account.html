@@ -1,12 +1,18 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <title>Account</title>
-    <h1>Account</h1>
-    <div class="userInfo">
-        <h2>Account Name</h2>
-        <h3>username</h3>
+<title>Account</title>
+<div class="account-info-container d-flex">
+    {% set initial = current_user.firstname[0] + current_user.lastname[0] %}
+    <figure class="avatar avatar-xl" data-initial="{{initial}}" style="background-color: #5755d9;"></figure>
+    <div class="account-info-name">{{current_user.firstname}} {{current_user.lastname}}</div>
+    <div class="account-info-email my-2">{{current_user.email}}</div>
+    <div class="d-flex my-2">
+        <button class="btn d-flex">
+            <span class="material-icons mx-2">edit</span>
+            Update Account Info
+        </button>
     </div>
-
+</div>
 
 {% endblock %}

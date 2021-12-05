@@ -201,8 +201,7 @@ def user_account() -> Response:
     Returns:
         Response: The rendered user account page
     """
-    user = current_user
-    return user.username
+    return render_template("account.html", title="Account")
 
 
 @app.route("/api/songs")
