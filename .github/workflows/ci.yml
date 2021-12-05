@@ -21,15 +21,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Deploy to App Engine
-        id: deploy
-        uses: google-github-actions/deploy-appengine@v0.2.0
+      - name: Initialize Google App Engine
+        uses: zxyle/publish-gae-action@master
         with:
-          deliverables: app.yaml
-          version: v1
-          project_id: ${{ secrets.GCP_PROJECT }}
-          credentials: ${{ secrets.GCP_CREDENTIALS }}
+          service_account_email: ${{ secrets.GCP_SA_EMAIL }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ secrets.PROJECT_ID }}
 
-      - name: Test
-        run: echo "Deployed at - ${{ steps.deploy.outputs.url }}"
-        run: curl "${{ steps.deploy.outputs.url }}"
+      - name: Publish app to Google App Engine
+        run: |
+          echo "${{ secrets.DOT_ENV }}" | base64 --decode > .env
+          cat .env
+          echo "${{ secrets.APPLICATION_DEFAULT_CREDENTIALS }}" | base64 --decode > application_default_credentials.json
+          gcloud auth activate-service-account ${{ secrets.GCP_SA_EMAIL }} --key-file=client-secret.json
+          gcloud config set project ${{ secrets.PROJECT_ID }}
+          gcloud -q app deploy
+
