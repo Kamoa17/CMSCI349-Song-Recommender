@@ -31,7 +31,6 @@ jobs:
       - name: Publish app to Google App Engine
         run: |
           echo "${{ secrets.DOT_ENV }}" | base64 --decode > .env
-          cat .env
           echo "${{ secrets.APPLICATION_DEFAULT_CREDENTIALS }}" | base64 --decode > application_default_credentials.json
           gcloud auth activate-service-account ${{ secrets.GCP_SA_EMAIL }} --key-file=client-secret.json
           gcloud config set project ${{ secrets.PROJECT_ID }}
