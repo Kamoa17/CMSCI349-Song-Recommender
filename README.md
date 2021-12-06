@@ -1,6 +1,6 @@
 # Musique
 Music Recommendation Made Simple      
-[![Deploy to GAE](https://github.com/collinsnji/musique/actions/workflows/ci.yml/badge.svg)](https://github.com/collinsnji/musique/actions/workflows/ci.yml)
+[![Deploy to GAE](https://github.com/collinsnji/musique/actions/workflows/ci.yml/badge.svg)](https://github.com/collinsnji/musique/actions/workflows/ci.yml) [![Run Python Tests](https://github.com/collinsnji/musique/actions/workflows/tests.yml/badge.svg)](https://github.com/collinsnji/musique/actions/workflows/tests.yml)
 
 # About this project
 This project is the semester project for CS 346 - Software Engineering at Mount St. Mary's University. The idea behind this project is to put the user at the center of their music recommendation.    
